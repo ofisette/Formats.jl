@@ -1,0 +1,7 @@
+name = "Formats"
+uuid = "eb180938-a0cb-11e8-14d8-335c76514f04"
+authors = ["Olivier Fisette <ofisette@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+TranscodingStreams = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
