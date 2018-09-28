@@ -6,9 +6,9 @@ The `Formats` module provides functions to `guess` and to `specify` the format
 (e.g. `image/png`) and, optionally, the coding (e.g. `application/gzip`)
 associated with a filename or an IO stream. The `Formatted` objects created by
 these functions can be passed to the standard IO functions `open`, `close`,
-`read` and `write`. Three convenience functions are also provided for
-interactive use; `openf`, `readf` and `writef` behave like their counterparts
-from the `Base` module, but also detect formatted data automatically. Package
+`read` and `write`. Four convenience functions are also provided for interactive
+use; `openf`, `readf`, `readf!` and `writef` behave like their counterparts from
+the `Base` module, but also detect formatted data automatically. Package
 developers can integrate their IO routines with `Formats` by specializing
 functions and registering the formats or codings they support. If multiple
 loaded packages support the same formats, a “favorite” system allows choosing a
