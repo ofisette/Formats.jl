@@ -239,10 +239,10 @@ default).
 
 ## See also
 
-* [FormatCodecs](https:://github.com/ofisette/FormatCodecs.jl):
+* [FormatCodecs](https://github.com/ofisette/FormatCodecs.jl):
   Integrate common transcoders with Formats (recommended).
 
-* [FormatStreams](https:://github.com/ofisette/FormatStreams.jl):
+* [FormatStreams](https://github.com/ofisette/FormatStreams.jl):
   Read and write series of formatted objects in IO streams.
 
 * [TranscodingStreams](https://github.com/bicycle1885/TranscodingStreams.jl):
