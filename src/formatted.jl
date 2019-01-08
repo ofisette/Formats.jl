@@ -257,11 +257,11 @@ function resolveformat(f::Formatted)
 	format = f.format
 	if format == nothing
 		if length(f.format_guesses) == 0
-			error("could not determine format")
+			error("$(f.resource): could not determine format")
 		else
 			format = f.format_guesses[1]
 			if length(f.format_guesses) > 1
-				@warn("ambiguous format, assuming $(format)")
+				@warn("$(f.resource): ambiguous format, assuming $(format)")
 			end
 		end
 	end
@@ -285,7 +285,7 @@ function resolvecoding(f::Formatted)
 		if length(f.coding_guesses) != 0
 			coding = f.coding_guesses[1]
 			if length(f.coding_guesses) > 1
-				@warn("ambiguous coding, assuming $(coding)")
+				@warn("$(f.resource): ambiguous coding, assuming $(coding)")
 			end
 		end
 	end

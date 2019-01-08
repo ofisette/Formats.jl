@@ -75,23 +75,29 @@ FormattedIO: IOStream(<file myoglobin.gro>)
 julia> mol2 = read(f3)
 ```
 """
-function Base.read(f::FormattedFilename, args...; kwargs...)
-	return open(f) do f2
-		return read(f2, args...; kwargs...)
+function Base.read(f::Formatted, args...; kwargs...)
+	format = resolveformat(f)
+    coding = resolvecoding(f)
+	read(f.resource, format, coding, args...; kwargs...)
+end
+
+function Base.read(filename::AbstractString, format::MIME,
+		coding::Union{MIME,Nothing}, args...; kwargs...)
+	open(filename) do io
+		read(io, format, coding, args...; kwargs...)
 	end
 end
 
-function Base.read(f::FormattedIO, args...; kwargs...)
-	format = resolveformat(f)
+function Base.read(io::IO, format::MIME, coding::Union{MIME,Nothing}, args...;
+		kwargs...)
 	reader = resolvereader(format)
-    coding = resolvecoding(f)
 	if coding == nothing
-		io = f.resource
+		read(reader, format, io, args...; kwargs...)
 	else
 		decoder = resolvedecoder(coding)
-		io = TranscodingStream(decoder(), f.resource)
+		io2 = TranscodingStream(decoder(), io)
+		read(reader, format, io2, args...; kwargs...)
 	end
-	return read(reader, format, io, args...; kwargs...)
 end
 
 """
@@ -216,25 +222,31 @@ julia> write(f, mol)
 [...]
 ```
 """
-function Base.write(f::FormattedFilename, x)
-	open(f, "w") do f2
-		write(f2, x)
+function Base.write(f::Formatted, x, args...; kwargs...)
+	format = resolveformat(f)
+	coding = resolvecoding(f)
+	write(f.resource, format, coding, x, args...; kwargs...)
+end
+
+function Base.write(filename::AbstractString, format::MIME,
+		coding::Union{MIME,Nothing}, x, args...; kwargs...)
+	open(filename, "w") do io
+		write(io, format, coding, x, args...; kwargs...)
 	end
 end
 
-function Base.write(f::FormattedIO, x, args...; kwargs...)
-	format = resolveformat(f)
+function Base.write(io::IO, format::MIME, coding::Union{MIME,Nothing}, x,
+		args...; kwargs...)
 	writer = resolvewriter(format)
-	coding = resolvecoding(f)
-	pos0 = position(f.resource)
+	pos0 = position(io)
 	if coding == nothing
-		io = f.resource
+		write(writer, format, io, x, args...; kwargs...)
 	else
 		encoder = resolveencoder(coding)
-		io = TranscodingStream(encoder(), f.resource)
+		io2 = TranscodingStream(encoder(), io)
+		write(writer, format, io2, x, args...; kwargs...)
 	end
-	write(writer, format, io, x, args...; kwargs...)
-	position(f.resource) - pos0
+	position(io) - pos0
 end
 
 """
