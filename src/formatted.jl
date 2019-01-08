@@ -265,7 +265,7 @@ function resolveformat(f::Formatted)
 			end
 		end
 	end
-	return format
+	format
 end
 
 """
@@ -289,7 +289,7 @@ function resolvecoding(f::Formatted)
 			end
 		end
 	end
-    return coding
+    coding
 end
 
 """
@@ -304,8 +304,8 @@ codings were inferred, the first guess is returned, and a warning is recorded.
 function getcoding(f::Formatted)
     coding = resolvecoding(f)
     if coding == nothing
-        return nothing
+        nothing
     else
-        return string(coding)
+        string(coding)
     end
 end

@@ -359,7 +359,7 @@ function resolvehandler(mime::MIME, thing::AbstractString,
 					"using global preferred $(thing) $(handler)")
 		end
 	end
-	return handler
+	handler
 end
 
 resolvereader(mime::MIME) =
@@ -371,13 +371,13 @@ resolvewriter(mime::MIME) =
 		registry.favorite_writers, registry.global_favorite_writers)
 
 function resolvedecoder(mime::MIME)
-	return get(registry.decoders, mime) do
+	get(registry.decoders, mime) do
 		error("no decoder registered for format $(string(mime))")
 	end
 end
 
 function resolveencoder(mime::MIME)
-	return get(registry.encoders, mime) do
+	get(registry.encoders, mime) do
 		error("no encoder registered for format $(string(mime))")
 	end
 end

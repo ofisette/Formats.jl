@@ -20,7 +20,7 @@ function Base.read(::TestIO1, ::MIME"text/plain", io::IO)
         end
         push!(chars, char)
     end
-    return String(chars)
+    String(chars)
 end
 
 function Base.write(::TestIO1, ::MIME"text/plain", io::IO, x)

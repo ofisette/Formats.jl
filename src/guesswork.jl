@@ -29,7 +29,7 @@ function guesscontent(filename::AbstractString)
 			end
 		end
 	end
-	return format_guesses, coding_guesses
+	format_guesses, coding_guesses
 end
 
 function guesscontent(io::IO)
@@ -56,5 +56,5 @@ function guesscontent(io::IO)
 	if length(format_guesses) > 0 && length(coding_guesses) > 0
 		coding_guesses = []
 	end
-	return format_guesses, coding_guesses
+	format_guesses, coding_guesses
 end

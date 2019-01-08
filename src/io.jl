@@ -27,15 +27,14 @@ FormattedIO: IOStream(<file insulin.dat>)
 """
 function Base.open(f::FormattedFilename, args...; kwargs...)
 	io = open(f.resource, args...; kwargs...)
-	return FormattedIO(io, f.format, f.coding,
-            f.format_guesses, f.coding_guesses)
+	FormattedIO(io, f.format, f.coding, f.format_guesses, f.coding_guesses)
 end
 
 function Base.open(fn::Function, f::FormattedFilename, args...; kwargs...)
 	f2 = open(f, args...; kwargs...)
 	results = fn(f2)
 	close(f2)
-	return results
+	results
 end
 
 """
@@ -122,7 +121,7 @@ struct MyIO <: Formats.FormatHandler end
 
 function Base.read(::MyIO, ::MIME"image/png", io::IO)
 	# Read data from io to construct value x...
-	return x
+	x
 end
 ```
 """
@@ -165,8 +164,8 @@ julia> read!(f3, mol2)
 ```
 """
 function Base.read!(f::FormattedFilename, output, args...; kwargs...)
-	return open(f) do f2
-		return read!(f2, output, args...; kwargs...)
+	open(f) do f2
+		read!(f2, output, args...; kwargs...)
 	end
 end
 
@@ -180,7 +179,7 @@ function Base.read!(f::FormattedIO, output, args...; kwargs...)
 		decoder = resolvedecoder(coding)
 		io = TranscodingStream(decoder(), f.resource)
 	end
-	return read!(reader, format, io, output, args...; kwargs...)
+	read!(reader, format, io, output, args...; kwargs...)
 end
 
 """
@@ -299,7 +298,7 @@ function openf(fn::Function, filename::Union{AbstractString,FormattedFilename},
     f = open(filename, args...; kwargs...)
     results = fn(f)
     close(f)
-	return results
+	results
 end
 
 """
