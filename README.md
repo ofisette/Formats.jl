@@ -2,7 +2,7 @@
 
 Julia package to read, write and detect formatted data, based on MIME types.
 
-The `Formats` module provides functions to `guess` and to `specify` the format
+The `Formats` module provides functions to `infer` and to `specify` the format
 (e.g. `image/png`) and, optionally, the coding (e.g. `application/gzip`)
 associated with a filename or an IO stream. The `Formatted` objects created by
 these functions can be passed to the standard IO functions `open`, `close`,
@@ -52,22 +52,22 @@ using Formats       # Framework for data formats and codings (this package)
 using FormatCodecs  # Codecs for common codings (separate package)
 ```
 
-To guess the format of a file from its filename:
+To infer the format of a file from its filename:
 
 ```julia
-f = guess("insulin.pdb")
+f = infer("insulin.pdb")
 ```
 
 The coding (such as data compression) is also automatically detected:
 
 ```julia
-f = guess("myoglobin.gro.gz")
+f = infer("myoglobin.gro.gz")
 ```
 
-To guess a format based on a stream’s content:
+To infer a format based on a stream’s content:
 
 ```julia
-f = guess(open("insulin.pdb"))
+f = infer(open("insulin.pdb"))
 ```
 
 To specify a known file format and, optionally, a coding:
@@ -77,12 +77,12 @@ f1 = specify("insulin.dat", "structure/x-pdb")
 f2 = specify("myoglobin.dat", "structure/x-gro", "application/gzip")
 ```
 
-To check if a format was specified or guessed:
+To check if a format was specified or inferred:
 
 ```julia
-f = guess("kitten.png")
+f = infer("kitten.png")
 isspecified(f)  # -> False
-isguessed(f)    # -> True
+isinferred(f)    # -> True
 isunknown(f)    # -> False
 isambiguous(f)  # -> False
 ```
@@ -90,23 +90,23 @@ isambiguous(f)  # -> False
 To get the detected or specified format/coding:
 
 ```julia
-h = guess("myoglobin.gro.gz")
+h = infer("myoglobin.gro.gz")
 getformat(h)  # -> "structure/x-gro"
 getcoding(h)  # -> "application/gzip"
 ```
 
-Functions `guess` and `specify` return a `Formatted` object which can be passed
+Functions `infer` and `specify` return a `Formatted` object which can be passed
 to `read` and `write`:
 
 ```julia
 mol = read(specify("insulin.pdb", "structure/x-pdb"))
-write(guess("insulin.gro.gz"), mol)
+write(infer("insulin.gro.gz"), mol)
 ```
 
 Function `read!` targets a pre-allocated output object:
 
 ```julia
-read!(guess("insulin.gro.gz"), mol))
+read!(infer("insulin.gro.gz"), mol))
 ```
 
 `Formatted` objects created from a filename can be `open`ed, returning a new
@@ -114,23 +114,23 @@ read!(guess("insulin.gro.gz"), mol))
 streams can be `close`d:
 
 ```julia
-f1 = guess("insulin.pdb")
+f1 = infer("insulin.pdb")
 f2 = open(f1)
 close(f2)
 ```
 
-Functions `guess` and `specify` can be called with an existing `Formatted`
-object. This will guess format and coding again, or override previous guesses
+Functions `infer` and `specify` can be called with an existing `Formatted`
+object. This will infer format and coding again, or override previous guesses
 with the specified information:
 
 ```julia
-f1 = guess("insulin.dat")
+f1 = infer("insulin.dat")
 f2 = specify(f1, "structure/x-pdb")
-f3 = guess(open(f2))
+f3 = infer(open(f2))
 ```
 
 Convenience functions `openf`, `readf`, `readf!` and `writef` automatically
-guess format and coding if passed a filename or IO stream, but preserve the
+infer format and coding if passed a filename or IO stream, but preserve the
 existing format/coding information if passed a `Formatted` object:
 
 ```julia
@@ -152,16 +152,16 @@ accept and return strings (e.g. `"image/png"`), which are converted to and from
 
 ### Guessing and specifying formats and codings
 
-Functions can be used to `guess` and `specify` the format/coding associated with
+Functions can be used to `infer` and `specify` the format/coding associated with
 a filename or IO stream. These two functions return `Formatted` (abstract type)
 objects which wrap the original resource and add format and coding information.
-A third function, `formatted`, will `guess` the format and coding if called with
+A third function, `formatted`, will `infer` the format and coding if called with
 an filename or IO, but will return any `Formatted` object unchanged, preserving
 existing format/coding information.
 
-Functions `isspecified` and `isguessed` can be used on `Formatted` objects to
-check if a format was specified or guessed. Function `isunknown` tests whether
-the format of a resource was neither specified nor guessed successfully. If a
+Functions `isspecified` and `isinferred` can be used on `Formatted` objects to
+check if a format was specified or inferred. Function `isunknown` tests whether
+the format of a resource was neither specified nor inferred successfully. If a
 file extension or stream signature is associated with multiple possible formats,
 ambiguities can arise; there will be multiple guesses as to the possible format
 of a resource. This can be checked with `isambiguous`.
@@ -180,7 +180,7 @@ it directly.
 
 Formats offers four convenience functions: `openf`, `readf`, `readf!` and
 `writef` (where `f` stands for formatted). These operate just like their
-counterparts `open`, `read`, `read!` and `write`, but will automatically guess
+counterparts `open`, `read`, `read!` and `write`, but will automatically infer
 the file format when acting on a filename or IO stream. When acting on a
 `Formatted` object, they will preserve the existing format/coding information.
 
@@ -192,12 +192,12 @@ the `addformat` and `addcoding` functions, which are not exported by default.
 Multiple registrations of a format or coding will be ignored, so you do not need
 to worry about other packages also registering the formats you support.
 
-To take advantage of the `guess` function, you should use `addextention` and
+To take advantage of the `infer` function, you should use `addextention` and
 `addsignature` (not exported by default) to register the filename extensions and
 stream signatures associated with your formats. Multiple registrations of the
 same extension or signature for the same format will be ignored. However,
 associating the same extension or signature to multiple formats will result in a
-warning since it introduces ambiguities when guessing formats.
+warning since it introduces ambiguities when inferring formats.
 
 ### Implementing readers, writers and codecs
 

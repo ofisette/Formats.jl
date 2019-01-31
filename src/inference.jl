@@ -1,12 +1,12 @@
 """
-    guesscontent(filename|io) -> (formats[], codings[])
+    infercontent(filename|io) -> (formats[], codings[])
 
 Guess possible formats/codings from a filename or IO stream.
 
 In the case of a filename, the extension is checked; for IO streams, the first
 few bytes of the stream are examined.
 """
-function guesscontent(filename::AbstractString)
+function infercontent(filename::AbstractString)
 	format_guesses = []
 	coding_guesses = []
 	filename2, extension = splitext(filename)
@@ -32,7 +32,7 @@ function guesscontent(filename::AbstractString)
 	format_guesses, coding_guesses
 end
 
-function guesscontent(io::IO)
+function infercontent(io::IO)
 	format_guesses = []
 	coding_guesses = []
 	mark(io)

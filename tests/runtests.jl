@@ -34,7 +34,7 @@ end
         Formats.newregistry() do
             f1 = specify("kitten.png", "image/png")
             @test isspecified(f1)
-            @test !isguessed(f1)
+            @test !isinferred(f1)
             @test !isunknown(f1)
             @test !isambiguous(f1)
             @test getformat(f1) == "image/png"
@@ -43,7 +43,7 @@ end
 
             f2 = specify("oldcat.dat", "image/bmp", "application/gzip")
             @test isspecified(f2)
-            @test !isguessed(f2)
+            @test !isinferred(f2)
             @test !isunknown(f2)
             @test !isambiguous(f2)
             @test getformat(f2) == "image/bmp"
@@ -53,9 +53,9 @@ end
 
     @testset "Guess from filename" begin
         Formats.newregistry() do
-            f1 = guess("kitten.png")
+            f1 = infer("kitten.png")
             @test !isspecified(f1)
-            @test !isguessed(f1)
+            @test !isinferred(f1)
             @test isunknown(f1)
             @test !isambiguous(f1)
             @test_throws ErrorException getformat(f1)
@@ -63,17 +63,17 @@ end
 
             Formats.addformat("image/png")
             Formats.addextension("image/png", ".png")
-            f2 = guess("kitten.png")
+            f2 = infer("kitten.png")
             @test !isspecified(f2)
-            @test isguessed(f2)
+            @test isinferred(f2)
             @test !isunknown(f2)
             @test !isambiguous(f2)
             @test getformat(f2) == "image/png"
             @test getcoding(f2) == nothing
 
-            f3 = guess("kitten.png.gz")
+            f3 = infer("kitten.png.gz")
             @test !isspecified(f3)
-            @test !isguessed(f3)
+            @test !isinferred(f3)
             @test isunknown(f3)
             @test !isambiguous(f3)
             @test_throws ErrorException getformat(f3)
@@ -81,9 +81,9 @@ end
 
             Formats.addcoding("application/gzip")
             Formats.addextension("application/gzip", ".gz")
-            f4 = guess("kitten.png.gz")
+            f4 = infer("kitten.png.gz")
             @test !isspecified(f4)
-            @test isguessed(f4)
+            @test isinferred(f4)
             @test !isunknown(f4)
             @test !isambiguous(f4)
             @test getformat(f4) == "image/png"
@@ -91,9 +91,9 @@ end
 
             Formats.addformat("game/pong")
             Formats.addextension("game/pong", ".png")
-            f5 = guess("kitten.png")
+            f5 = infer("kitten.png")
             @test !isspecified(f5)
-            @test isguessed(f5)
+            @test isinferred(f5)
             @test !isunknown(f5)
             @test isambiguous(f5)
             getformat(f5)
@@ -105,9 +105,9 @@ end
         Formats.newregistry() do
             io = open("$(datapath)/kitten.png")
 
-            f1 = guess(io)
+            f1 = infer(io)
             @test !isspecified(f1)
-            @test !isguessed(f1)
+            @test !isinferred(f1)
             @test isunknown(f1)
             @test !isambiguous(f1)
             @test_throws ErrorException getformat(f1)
@@ -117,9 +117,9 @@ end
             Formats.addsignature("image/png",
                     [0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a])
             Formats.addsignature("image/png", "fake!")
-            f2 = guess(io)
+            f2 = infer(io)
             @test !isspecified(f2)
-            @test isguessed(f2)
+            @test isinferred(f2)
             @test !isunknown(f2)
             @test !isambiguous(f2)
             @test getformat(f2) == "image/png"
@@ -128,9 +128,9 @@ end
             Formats.addformat("game/pong")
             Formats.addsignature("game/pong",
                     [0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a])
-            f3 = guess(io)
+            f3 = infer(io)
             @test !isspecified(f3)
-            @test isguessed(f3)
+            @test isinferred(f3)
             @test !isunknown(f3)
             @test isambiguous(f3)
             getformat(f3)
@@ -143,19 +143,19 @@ end
             Formats.addformat("image/png")
             Formats.addsignature("image/png",
                     [0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a])
-            f1 = guess("$(datapath)/kitten.png")
+            f1 = infer("$(datapath)/kitten.png")
 
             f2 = open(f1)
             @test !isspecified(f2)
-            @test !isguessed(f2)
+            @test !isinferred(f2)
             @test isunknown(f2)
             @test !isambiguous(f2)
             @test_throws ErrorException getformat(f2)
             @test getcoding(f2) == nothing
 
-            f3 = guess(f2)
+            f3 = infer(f2)
             @test !isspecified(f3)
-            @test isguessed(f3)
+            @test isinferred(f3)
             @test !isunknown(f3)
             @test !isambiguous(f3)
             @test getformat(f3) == "image/png"
@@ -165,7 +165,7 @@ end
 
     @testset "Passthrough with formatted" begin
         Formats.newregistry() do
-            f1 = guess("kitten.png")
+            f1 = infer("kitten.png")
             Formats.addformat("image/png")
             Formats.addextension("image/png", ".png")
             Formats.addsignature("image/png",
@@ -173,7 +173,7 @@ end
 
             f2 = formatted(f1)
             @test !isspecified(f2)
-            @test !isguessed(f2)
+            @test !isinferred(f2)
             @test isunknown(f2)
             @test !isambiguous(f2)
             @test_throws ErrorException getformat(f2)
@@ -181,7 +181,7 @@ end
 
             f3 = formatted("kitten.png")
             @test !isspecified(f3)
-            @test isguessed(f3)
+            @test isinferred(f3)
             @test !isunknown(f3)
             @test !isambiguous(f3)
             @test getformat(f3) == "image/png"
@@ -189,7 +189,7 @@ end
 
             f4 = formatted(open("$(datapath)/kitten.png"))
             @test !isspecified(f4)
-            @test isguessed(f4)
+            @test isinferred(f4)
             @test !isunknown(f4)
             @test !isambiguous(f4)
             @test getformat(f4) == "image/png"

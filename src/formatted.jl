@@ -3,7 +3,7 @@
 
 Wrap a resource (e.g. filename or IO stream), adding format/coding information.
 
-`Formatted` objects can be created with `guess` or `specify` and can be used
+`Formatted` objects can be created with `infer` or `specify` and can be used
 with `open`, `close`, `read` and `write`.
 """
 abstract type Formatted end
@@ -81,7 +81,7 @@ struct FormattedIO <: Formatted
 end
 
 """
-	guess(filename|io|formatted) -> ::Formatted
+	infer(filename|io|formatted) -> ::Formatted
 
 Guess the format/coding of a resource (filename, IO stream, `Formatted` object).
 
@@ -96,7 +96,7 @@ Guess the format/coding of a resource (filename, IO stream, `Formatted` object).
 Guess format from filename extension:
 
 ```julia
-julia> f = guess("insulin.pdb")
+julia> f = infer("insulin.pdb")
 FormattedFilename: insulin.pdb
  inferred format: structure/x-pdb
 ```
@@ -107,7 +107,7 @@ Guess format from an IO stream:
 julia> io = open("insulin.pdb")
 IOStream(<file insulin.pdb>)
 
-julia> f = guess(io)
+julia> f = infer(io)
 FormattedIO: IOStream(<file insulin.pdb>)
  inferred format: structure/x-pdb
 ```
@@ -115,7 +115,7 @@ FormattedIO: IOStream(<file insulin.pdb>)
 Guess format from a `Formatted` object:
 
 ```julia
-julia> f1 = guess("insulin.dat")
+julia> f1 = infer("insulin.dat")
 FormattedFilename: insulin.dat
  unknown format
 
@@ -123,18 +123,18 @@ julia> f2 = open(f1)
 FormattedIO: IOStream(<file insulin.dat>)
  unknown format
 
-julia> f3 = guess(f2)
+julia> f3 = infer(f2)
 FormattedIO: IOStream(<file insulin.dat>)
  inferred format: structure/x-pdb
 ```
 """
-guess(filename::AbstractString) =
-		FormattedFilename(filename, nothing, nothing, guesscontent(filename)...)
+infer(filename::AbstractString) =
+		FormattedFilename(filename, nothing, nothing, infercontent(filename)...)
 
-guess(io::IO) = FormattedIO(io, nothing, nothing, guesscontent(io)...)
+infer(io::IO) = FormattedIO(io, nothing, nothing, infercontent(io)...)
 
-guess(f::T) where {T<:Formatted} =
-        T(f.resource, nothing, nothing, guesscontent(f.resource)...)
+infer(f::T) where {T<:Formatted} =
+        T(f.resource, nothing, nothing, infercontent(f.resource)...)
 
 """
 	specify(filename|io|formatted, format, [coding]) -> ::Formatted
@@ -174,7 +174,7 @@ FormattedIO: IOStream(<file myoglobin.gro.gz>)
 Specify a format for an existing Formatted object:
 
 ```julia
-julia> f1 = guess("lysozyme.dat")
+julia> f1 = infer("lysozyme.dat")
 FormattedFilename: lysozyme.dat
  unknown format
 
@@ -206,7 +206,7 @@ specify(f::T, format::AbstractString) where {T<:Formatted} =
 """
     formatted(filename|io|formatted) -> ::Formatted
 
-Wrap a resource, preserving existing format/coding information, and guessing
+Wrap a resource, preserving existing format/coding information, and inferring
 format/coding when there is no such information.
 
 # Arguments
@@ -215,9 +215,9 @@ format/coding when there is no such information.
 	io::IO
 	formatted::Formatted
 """
-formatted(filename::AbstractString) = guess(filename)
+formatted(filename::AbstractString) = infer(filename)
 
-formatted(io::IO) = guess(io)
+formatted(io::IO) = infer(io)
 
 formatted(f::Formatted) = f
 
@@ -229,12 +229,12 @@ Check if the format of `f` was explicitly specified.
 isspecified(f::Formatted) = (f.format != nothing)
 
 """
-    isguessed(f::Formatted) -> ::Bool
+    isinferred(f::Formatted) -> ::Bool
 
-Check if the format of `f` was guessed from a filename extension or stream
+Check if the format of `f` was inferred from a filename extension or stream
 signature.
 """
-isguessed(f::Formatted) =
+isinferred(f::Formatted) =
         (f.format == nothing) && (length(f.format_guesses) > 0)
 
 """
@@ -248,7 +248,7 @@ isunknown(f::Formatted) =
 """
     isambiguous(f::Formatted) -> ::Bool
 
-Check if several possible formats were guessed for `f`.
+Check if several possible formats were inferred for `f`.
 """
 isambiguous(f::Formatted) =
         (f.format == nothing) && (length(f.format_guesses) > 1)

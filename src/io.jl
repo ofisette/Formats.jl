@@ -6,13 +6,13 @@ Similar to `open(filename::AbstractString, ...)`, but operates on the filename
 wrapped by `f`.
 
 Format/coding information associated with `f` is preserved in the returned
-`FormattedIO`. To specify format/coding or guess from the IO stream, use
-`specify` or `guess` on the returned object.
+`FormattedIO`. To specify format/coding or infer from the IO stream, use
+`specify` or `infer` on the returned object.
 
 # Examples
 
 ```julia
-julia> f1 = guess("insulin.dat")
+julia> f1 = infer("insulin.dat")
 FormattedFilename: insulin.dat
  unknown format
 
@@ -20,7 +20,7 @@ julia> f2 = open(f1)
 FormattedIO: IOStream(<file insulin.dat>)
  unknown format
 
-julia> f3 = guess(f2)
+julia> f3 = infer(f2)
 FormattedIO: IOStream(<file insulin.dat>)
  inferred format: structure/x-pdb
 ```
@@ -56,14 +56,14 @@ selected.
 # Examples
 
 ```julia
-julia> f1 = guess("insulin.pdb")
+julia> f1 = infer("insulin.pdb")
 FormattedFilename: insulin.pdb
  inferred format: structure/x-pdb
 
 julia> mol1 = read(f1)
 ...
 
-julia> f2 = guess("myoglobin.gro")
+julia> f2 = infer("myoglobin.gro")
 FormattedFilename: myoglobin.gro
  inferred format: structure/x-gro
 
@@ -139,7 +139,7 @@ selected.
 # Examples
 
 ```julia
-julia> f1 = guess("insulin.pdb")
+julia> f1 = infer("insulin.pdb")
 FormattedFilename: insulin.pdb
  inferred format: structure/x-pdb
 
@@ -149,7 +149,7 @@ julia> mol1 = MolecularModel()
 julia> read!(f1, mol1)
 [...]
 
-julia> f2 = guess("myoglobin.gro")
+julia> f2 = infer("myoglobin.gro")
 FormattedFilename: myoglobin.gro
  inferred format: structure/x-gro
 
@@ -206,13 +206,13 @@ selected.
 # Examples
 
 ```julia
-julia> mol = read(guess("insulin.pdb"))
+julia> mol = read(infer("insulin.pdb"))
 [...]
 
-julia> write(guess("insulin.gro"), mol)
+julia> write(infer("insulin.gro"), mol)
 [...]
 
-julia> f = open(guess("insulin.gro.gz"), "w")
+julia> f = open(infer("insulin.gro.gz"), "w")
 FormattedIO: IOStream(<file insulin.gro.gz>)
  inferred format: structure/x-gro
  inferred coding: application/gzip
@@ -279,8 +279,8 @@ Base.write
 	openf(filename|formatted, args...; kwargs...) -> ::FormattedIO
     openf(fn::Function, filename|formatted, args...; kwargs...)
 
-Similar to `open(filename, ...)`, but format/coding are guessed automatically if
-missing.
+Similar to `open(filename, ...)`, but format/coding are inferred automatically
+if missing.
 
 # Arguments
 
@@ -304,8 +304,8 @@ end
 """
 	readf(filename|io|formatted, args...; kwargs...) -> value
 
-Similar to `read(filename|io, ...)`, but format/coding are guessed automatically
-if missing.
+Similar to `read(filename|io, ...)`, but format/coding are inferred
+automatically if missing.
 
 # Arguments
 
@@ -322,7 +322,7 @@ readf(resource::Union{AbstractString,IO,Formatted}, args...; kwargs...) =
 """
 	readf!(filename|io|formatted, output, args...; kwargs...) -> output
 
-Similar to `read!(filename|io, output, ...)`, but format/coding are guessed
+Similar to `read!(filename|io, output, ...)`, but format/coding are inferred
 automatically if missing.
 
 # Arguments
@@ -340,7 +340,7 @@ readf!(resource::Union{AbstractString,IO,Formatted}, output, args...;
 """
 	writef(filename|io|formatted, x, args...; kwargs...)
 
-Similar to `write(filename|io, x, ...)`, but format/coding are guessed
+Similar to `write(filename|io, x, ...)`, but format/coding are inferred
 automatically if unspecified.
 
 # Arguments
