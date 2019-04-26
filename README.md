@@ -26,7 +26,8 @@ Formats is not a registered package. You can add it to your Julia environment by
 giving the URL to its repository:
 
 ```julia
-Pkg.add("https:://github.com/ofisette/Formats.jl")
+using Pkg
+Pkg.add(PackageSpec(url="https:://github.com/ofisette/Formats.jl"))
 ```
 
 ## Documentation
