@@ -1,4 +1,4 @@
-The Formats.jl package can be used under the terms of the MIT “Expat” License:
+You can use Formats.jl under the terms of the MIT “Expat” License:
 
 > Copyright (c) 2018: Olivier Fisette.
 >
